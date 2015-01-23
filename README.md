@@ -1,5 +1,12 @@
-drupalpractice
-==============
+This project is deprecated
+==========================
+
+DrupalPractice has been merged into [Coder](https://www.drupal.org/project/coder),
+please use that instead.
+
+
+DrupalPractice
+--------------
 
 DrupalPractice sniffer - Uses [PHP_CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer)
 to find common errors that new Drupal developers make in their modules.
