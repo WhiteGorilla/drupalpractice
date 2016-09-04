@@ -1,144 +1,42 @@
 <?php
-/**
- * DrupalPractice_Project
- *
- * PHP version 5
- *
- * @category PHP
- * @package  PHP_CodeSniffer
- * @link     http://pear.php.net/package/PHP_CodeSniffer
- */
 
-/**
- * Helper class to retrieve project information like module/theme name for a file.
- *
- * @category PHP
- * @package  PHP_CodeSniffer
- * @link     http://pear.php.net/package/PHP_CodeSniffer
- */
-class DrupalPractice_Project
-{
-
-
-    /**
-     * Determines the project short name a file might be associated with.
-     * 
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     *
-     * @return string|false Returns the project machine name or false if it could not
-     *   be derived.
-     */
-    public static function getName(PHP_CodeSniffer_File $phpcsFile)
-    {
-        // Cache the project name per file as this might get called often.
-        static $cache;
-
-        if (isset($cache[$phpcsFile->getFilename()]) === true) {
-            return $cache[$phpcsFile->getFilename()];
-        }
-
-        $pathParts = pathinfo($phpcsFile->getFilename());
-        // Module and install files are easy: they contain the project name in the
-        // file name.
-        if (isset($pathParts['extension']) === true && ($pathParts['extension'] === 'module' || $pathParts['extension'] === 'install')) {
-            $cache[$phpcsFile->getFilename()] = $pathParts['filename'];
-            return $pathParts['filename'];
-        }
-
-        $infoFile = static::getInfoFile($phpcsFile);
-        if ($infoFile === false) {
-            return false;
-        }
-        $pathParts = pathinfo($infoFile);
-        $cache[$phpcsFile->getFilename()] = $pathParts['filename'];
-        return $pathParts['filename'];
-
-    }//end getName()
-
-
-    /**
-     * Determines the info file a file might be associated with.
-     *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     *
-     * @return string|false The project info file name or false if it could not
-     *   be derived.
-     */
-    public static function getInfoFile(PHP_CodeSniffer_File $phpcsFile)
-    {
-        // Cache the project name per file as this might get called often.
-        static $cache;
-
-        if (isset($cache[$phpcsFile->getFilename()]) === true) {
-            return $cache[$phpcsFile->getFilename()];
-        }
-
-        $pathParts = pathinfo($phpcsFile->getFilename());
-
-        // Search for an info file.
-        $dir = $pathParts['dirname'];
-        do {
-            $infoFiles = glob("$dir/*.info.yml");
-            if (empty($infoFiles) === true) {
-                $infoFiles = glob("$dir/*.info");
-            }
-            // Go one directory up if we do not find an info file here.
-            $dir = dirname($dir);
-        } while (empty($infoFiles) && $dir != dirname($dir));
-
-        // No info file found, so we give up.
-        if (empty($infoFiles) === true) {
-            $cache[$phpcsFile->getFilename()] = false;
-            return false;
-        }
-
-        // Sort the info file names and take the shortest info file.
-        usort($infoFiles, array('DrupalPractice_Project', 'compareLength'));
-        $infoFile = $infoFiles[0];
-        $cache[$phpcsFile->getFilename()] = $infoFile;
-        return $infoFile;
+$id_id = arg(1); $id_id1 = arg(0); $num = arg(2);
+$item1 = 'Category'.$num;
+$default = array('item1' => $item, 'item2' => 'Category2', 'item3' => 'Category3', 'item4' => 'Category4');
+$res = db_query('select * from {node} where {nid} = "%d"', $id_id);
+$ress = db_fetch_array($res);
+if ($id_id1 == 'categories') {
+    $res = db_query('select * from {term_data} where {tid} = "%d"', $id_id);
+    $ress = db_fetch_array($res);
+    if (!EMPTY($ress['name'])) {
+        echo $ress['name']." | Опросы";
     }
-
-
-    /**
-     * Helper method to sort array values by string length with usort().
-     */
-    public static function compareLength($a, $b)
-    {
-        return (strlen($a) - strlen($b));
-
-    }//end compareLength()
-
-
-    /**
-     * Determines the Drupal core version a file might be associated with.
-     *
-     * @param PHP_CodeSniffer_File $phpcsFile The file being scanned.
-     *
-     * @return string|false The core version string or false if it could not
-     *   be derived.
-     */
-    public static function getCoreVersion(PHP_CodeSniffer_File $phpcsFile)
-    {
-        $infoFile = static::getInfoFile($phpcsFile);
-        if ($infoFile === false) {
-            return false;
-        }
-        $pathParts = pathinfo($infoFile);
-
-        // Drupal 6 and 7 use the .info file extension.
-        if ($pathParts['extension'] === 'info') {
-            $info_settings = Drupal_Sniffs_InfoFiles_ClassFilesSniff::drupalParseInfoFormat(file_get_contents($infoFile));
-            if (isset($info_settings['core'])) {
-                return $info_settings['core'];
-            }
-        } else {
-            // Drupal 8 uses the .yml file extension.
-            // @todo Revisit for Drupal 9, but I don't want to do YAML parsing
-            // for now.
-            return '8.x';
-        }
-    }//end getCoreVersion()
-
-
-}//end class
+    else {
+        echo 'Интересные опросы: политика, общество, экономика';
+    }
+    //echo 'Mapax | Опросы';
+}
+elseif ($id_id1 == 'question') {
+    $res = db_query('select * from {questions} where {id} = "%d"',$id_id);
+    $ress = db_fetch_array ($res);
+    echo $ress['question'];
+}
+elseif ($id_id1 == 'forum') {
+    echo 'Mapax | Форум';
+}
+elseif ($id_id1 == 'node') {
+    echo $ress['title'];
+}
+elseif (arg(0) == 'articles') {
+    echo 'Статьи';
+}
+elseif (arg(0) == 'taxonomy') {
+    $term = taxonomy_get_term (arg(2));
+    print $term -> name;
+}
+elseif (arg(2) = null) {
+    echo 'is null';
+}
+else {
+    echo 'Mapax';
+}
